@@ -2,6 +2,7 @@ import React from 'react'
 import styles from '../../styles/Post.module.css'
 import { useCurrentUser } from '../../contexts/CurrentUserContext';
 import { Card, OverlayTrigger } from 'react-bootstrap';
+import { axiosRes } from '../../api/axiosDefault';
 
 const Post = (props) => {
     const {
@@ -17,10 +18,43 @@ const Post = (props) => {
         image,
         updated_at,
         postPage,
+        setPosts,
     } = props;
 
     const currentUser = useCurrentUser();
-    const is_owner = currentUser?.username === owner
+    const is_owner = currentUser?.username === owner;
+
+    const handleLike = async () => {
+        try {
+            const {data} = await axiosRes.post('/likes/', {post:id});
+            setPosts((prevPosts) => ({
+                ...prevPosts,
+                results: prevPosts.results.map((post) => {
+                    return post.id === id
+                    ? {...post, likes_count: post.likes.count + 1, like_id: data.id}
+                    : post;
+                }),
+            }))
+        } catch(err){
+            console.log(err)
+        }
+    }
+
+    const handleUnlike = async () => {
+        try {
+            const {data} = await axiosRes.delete('/likes/', {post:id});
+            setPosts((prevPosts) => ({
+                ...prevPosts,
+                results: prevPosts.results.map((post) => {
+                    return post.id === id
+                    ? {...post, likes_count: post.likes.count - 1, like_id: null}
+                    : post;
+                }),
+            }))
+        } catch(err){
+            console.log(err)
+        }
+    }
   return <Card>
     <Card.Body>
         <Media className="align-items-center justify-content-between">
@@ -45,11 +79,11 @@ const Post = (props) => {
                     <i className="far fa-heart" />
                 </OverlayTrigger>
             ) : like_id? (
-                <span onClick={() => {}}>
+                <span onClick={handleUnlike}>
                     <i className={`fas fa-heart ${styles.Heart}`} />
                 </span>
             ) : currentUser ? (
-                <span onClick={() => {}}>
+                <span onClick={handleLike}>
                     <i className={`far fa-heart ${styles.HeartOutline}`} />
                 </span>
             ) : (
@@ -61,7 +95,7 @@ const Post = (props) => {
             <Link to={`/posts/${id}`}>
                 <i className="far fa-comments" />
             </Link>
-            {comments}
+            {comments_count}
         </div>
     </Card.Body>
   </Card>
