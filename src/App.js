@@ -6,6 +6,7 @@ import './api/axiosDefault';
 import SignUpForm from './pages/auth/SignUpForm';
 import SignInForm from './pages/auth/SignInForm';
 import PostCreateForm from './pages/posts/PostCreateForm';
+import PostsPage from './pages/posts/PostsPage';
 
 function App() {
 
@@ -14,7 +15,12 @@ function App() {
           <NavBar />
           <Container className={styles.Main}>
             <Switch>
-              <Route exact path="/" render={() => <h1>Home page</h1>}/>
+              <Route 
+                exact path="/"
+                render={() => (
+                  <PostsPage message="No results found. Adjust the searc keyword." />
+                )} 
+              />
               <Route exact path="/signin" render={() => <SignInForm />}/>
               <Route exact path="/signup" render={() => <SignUpForm />}/>
               <Route exact path="/posts/create" render={() => <PostCreateForm />}/>
