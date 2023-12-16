@@ -12,9 +12,8 @@ import styles from "../../styles/PostCreateEditForm.module.css";
 import appStyles from "../../App.module.css";
 import btnStyles from "../../styles/Button.module.css";
 
-import { useHistory } from "react-router";
+import { useHistory, useParams } from "react-router";
 import { axiosReq } from "../../api/axiosDefaults";
-import { useParams } from "react-router-dom/cjs/react-router-dom.min";
 
 function PostEditForm() {
   const [errors, setErrors] = useState({});
@@ -28,22 +27,22 @@ function PostEditForm() {
 
   const imageInput = useRef(null);
   const history = useHistory();
-  const {id} = useParams();
+  const { id } = useParams();
 
   useEffect(() => {
     const handleMount = async () => {
       try {
-        const {data} = await axiosReq.get(`/posts/${id}/`)
-        const {title, content, image, is_owner} = data;
+        const { data } = await axiosReq.get(`/posts/${id}/`);
+        const { title, content, image, is_owner } = data;
 
-        is_owner ? setPostData({title, content, image}) : history.push('/')
-      } catch(err){
-        console.log(err)
+        is_owner ? setPostData({ title, content, image }) : history.push("/");
+      } catch (err) {
+        console.log(err);
       }
-    }
+    };
 
     handleMount();
-  }, [history, id])
+  }, [history, id]);
 
   const handleChange = (event) => {
     setPostData({
@@ -74,7 +73,7 @@ function PostEditForm() {
     }
 
     try {
-      await axiosReq.post(`/posts/${id}`, formData);
+      await axiosReq.put(`/posts/${id}/`, formData);
       history.push(`/posts/${id}`);
     } catch (err) {
       console.log(err);
@@ -137,17 +136,18 @@ function PostEditForm() {
             className={`${appStyles.Content} ${styles.Container} d-flex flex-column justify-content-center`}
           >
             <Form.Group className="text-center">
-                <figure>
-                  <Image className={appStyles.Image} src={image} rounded />
-                </figure>
-                <div>
-                  <Form.Label
-                    className={`${btnStyles.Button} ${btnStyles.Blue} btn`}
-                    htmlFor="image-upload"
-                  >
-                    Change the image
-                  </Form.Label>
-                </div>
+              <figure>
+                <Image className={appStyles.Image} src={image} rounded />
+              </figure>
+              <div>
+                <Form.Label
+                  className={`${btnStyles.Button} ${btnStyles.Blue} btn`}
+                  htmlFor="image-upload"
+                >
+                  Change the image
+                </Form.Label>
+              </div>
+
               <Form.File
                 id="image-upload"
                 accept="image/*"
